@@ -1,0 +1,7 @@
+*
+!*.gns3
+!.gitignore
+!*.cfg
+!*/
+!conf/*
+!/*.txt
