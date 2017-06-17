@@ -5,3 +5,24 @@ ipv6 add 2001:0:0:0::3/64
 no shut
 end 
 write mem
+
+!IPSEC
+
+crypto isakmp policy 30
+authentication pre-share
+crypto isakmp key labcom address 100.0.0.131
+crypto ipsec transform-set auth ah-sha-hmac
+crypto ipsec transform-set cipherT esp-des
+crypto ipsec transform-set auth_ciphT ah-sha-hmac esp-des
+crypto ipsec profile ARipsec
+set transform-set authT cipherT auth_ciphT
+
+int Tunnel 0
+ip unnumbered f1/0
+tunnel source 100.0.0.141
+tunnel destination 100.0.0.131
+tunnel mode ipsec ipv4
+tunnel protection ipsec profile ARipsec
+no shut
+
+exit

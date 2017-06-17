@@ -1,14 +1,67 @@
 conf t
-int f0/0
-ip add 100.0.0.2 255.255.255.0
-ipv6 add 2001:0:0:0::2/64
-no shut
-end
-write mem
-
-conf t
 ip routing
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 2.2.2.132
+
 router ospf 1
-router-id 2.2.2.2
-end
-write mem
+router-id 2.2.2.132
+network 10.0.0.0 0.255.255.255 area 0
+default-information originate always metric 5
+
+int f0/0
+ip add 10.0.5.132 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 address 2002:A:A:5::132/64
+ipv6 ospf 1 area 0
+no shut
+
+int f0/1
+ip add 10.0.3.132 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:3::132/64
+ipv6 ospf 1 area 0
+no shut
+
+int f1/0
+ip address 100.0.0.132 255.255.255.0
+no shut
+
+int f2/0
+ip add 10.0.7.132 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:7::132/64
+ipv6 ospf 1 area 0
+no shut
+
+!ipv6 over ipv4
+
+int Tunnel1
+ipv6 address 2002:A:A:8::132/64
+tunnel source f1/0
+tunnel destination 100.0.0.142
+tunnel mode ipv6ip
+no shut
+exit
+
+!NAT/SNAT
+
+access-list 1 permit 10.0.0.0 0.255.255.255
+access-list 1 permit 192.168.0.0 0.0.255.255
+
+ip nat pool POOLR 100.0.0.0 100.0.0.62 netmask 255.255.255.0
+
+ip nat Stateful id 2
+primary 10.0.7.132
+peer 10.0.7.131
+mapping-id 10
+
+exit	
+
+ip nat inside source list 1 pool POOLR mapping-id 10 overload
+
+end 
+write

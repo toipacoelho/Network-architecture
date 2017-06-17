@@ -35,7 +35,7 @@ int Vlan 1
 ip add 10.0.1.111 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 add 2002:A:A:0:1::111/64
+ipv6 add 2002:A:A:1::111/64
 ipv6 ospf 1 area 0
 no autostate
 no shut
@@ -44,7 +44,7 @@ int Vlan 10
 ip add 10.0.10.111 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 add 2002:A:A:0:10::111/64
+ipv6 add 2002:A:A:10::111/64
 ipv6 ospf 1 area 0
 no autostate
 no shutdown
@@ -53,7 +53,7 @@ int Vlan 31
 ip add 10.0.31.111 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 add 2002:A:A:0:31::111/64
+ipv6 add 2002:A:A:31::111/64
 ipv6 ospf 1 area 0
 no autostate
 no shutdown
@@ -62,7 +62,7 @@ int Vlan 32
 ip add 10.0.32.111 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 add 2002:A:A:0:32::111/64
+ipv6 add 2002:A:A:32::111/64
 ipv6 ospf 1 area 0
 no autostate
 no shutdown
@@ -71,7 +71,7 @@ int Vlan 101
 ip add 10.0.101.111 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 add 2002:A:A:0:101::111/64
+ipv6 add 2002:A:A:101::111/64
 ipv6 ospf 1 area 0
 no autostate
 no shutdown
@@ -80,7 +80,7 @@ int Vlan 102
 ip add 10.0.102.111 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 add 2002:A:A:0:102::111/64
+ipv6 add 2002:A:A:102::111/64
 ipv6 ospf 1 area 0
 no autostate
 no shutdown

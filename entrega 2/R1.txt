@@ -2,66 +2,80 @@ conf t
 ip routing
 ipv6 unicast-routing
 ipv6 router ospf 1
-router-id 2.2.2.141
+router-id 2.2.2.131
 
-access-list 3 deny 10.0.0.0 0.255.255.255
-access-list 3 permit any
+router ospf 1
+router-id 2.2.2.131
+network 10.0.0.0 0.255.255.255 area 0
+default-information originate always metric 10
 
 int f0/0
-ip add 100.0.0.141 255.255.255.0
-ipv6 add 2001:0:0:0::1/64
+ip add 10.0.2.131 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 address 2002:A:A:2::131/64
+ipv6 ospf 1 area 0
 no shut
 
 int f0/1
-ip add 10.2.0.141 255.255.255.0
+ip add 10.0.6.131 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 address 2002:A:A:2::141/64
+ipv6 add 2002:A:A:6::131/64
 ipv6 ospf 1 area 0
 no shut
 
 int f1/0
-ip address 10.3.0.141 255.255.255.0
+ip address 100.0.0.131 255.255.255.0
+ipv6 enable
+ipv6 address 2001:0:0:0::131/64
+no shut
+
+int f2/0
+ip add 10.0.7.131 255.255.255.0
 ip ospf mtu-ignore
 ipv6 enable
-ipv6 address 2002:A:A:3::141/64
+ipv6 add 2002:A:A:7::131/64
 ipv6 ospf 1 area 0
 no shut
 
+!IPSEC
+
 crypto isakmp policy 30
 authentication pre-share
-crypto isakmp key labcom address 100.0.0.151
-crypto ipsec transform-set auth ah-sha-hmac
+crypto isakmp key labcom address 100.0.0.141
+crypto ipsec transform-set authT ah-sha-hmac
+crypto ipsec transform-set cipherT esp-des
 crypto ipsec transform-set auth_ciphT ah-sha-hmac esp-des
 crypto ipsec profile ARipsec
 set transform-set authT cipherT auth_ciphT
 
 int Tunnel 0
-ip unnumbered f0/0
+ip unnumbered f1/0
+tunnel source 100.0.0.131
+tunnel destination 100.0.0.141
 tunnel mode ipsec ipv4
-tunnel source f0/0
-tunnel destination 100.0.0.151
 tunnel protection ipsec profile ARipsec
 no shut
 
 exit
 
-ip nat pool MYNATPOOL 200.1.0.0 200.1.0.62 netmask 255.255.255.0
-access-list 2 permit 10.0.0.0 0.255.255.255
+!NAT/SNAT
 
-int f0/0
-ip nat outside
+access-list 1 permit 10.0.0.0 0.255.255.255
+access-list 1 permit 192.168.0.0 0.0.255.255
 
-int f0/1
-ip nat inside
+ip nat pool POOLR 100.0.0.0 100.0.0.62 netmask 255.255.255.0
 
-int f1/1
-ip nat inside
+ip nat Stateful id 1
+backup 10.0.7.131
+peer 10.0.7.132
+mapping-id 10
 
-ip nat translatation timeout 120
+exit
 
-router ospf 1
-network 10.0.0.0 0.255.255.255 area 0
-redis static subnet
+ip nat inside source list 1 pool POOLR mapping-id 10 overload
 
-end write
+end 
+write
+
