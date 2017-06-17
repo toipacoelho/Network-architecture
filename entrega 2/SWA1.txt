@@ -1,0 +1,100 @@
+conf t
+ip routing
+router ospf 1
+router-id 2.2.2.101
+end
+write mem
+
+vlan database
+vlan 1
+vlan 10
+vlan 21
+vlan 22
+vlan 101
+vlan 102
+exit
+
+conf t
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 2.2.2.101
+
+int f1/0
+switchport mode trunk
+switchport trunk allowed vlan 1,10,101,1002-1005
+
+int f1/1
+switchport mode trunk
+switchport trunk allowed vlan 1,10,102,1002-1005
+
+int range f1/2 - 15
+switchport mode trunk
+switchport trunk allowed vlan 1,10,21,22,101,102,1002-1005
+
+int Vlan 1
+ip add 10.0.1.101 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:0:1::101/64
+ipv6 ospf 1 area 0
+no autostate
+no shut
+
+int Vlan 10
+ip add 10.0.10.101 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:0:10::101/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+int Vlan 21
+ip add 10.0.21.101 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:0:21::101/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+int Vlan 22
+ip add 10.0.22.101 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:0:22::101/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+int Vlan 101
+ip add 10.0.101.101 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:0:101::101/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+int Vlan 102
+ip add 10.0.102.101 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:0:102::101/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+exit
+
+router ospf 1
+network 10.0.0.0 0.255.255.255 area 0
+passive-interface vlan 1
+passive-interface vlan 10
+
+ipv6 router ospf 1
+passive-interface vlan 1
+passive-interface vlan 10
+
+end
+write

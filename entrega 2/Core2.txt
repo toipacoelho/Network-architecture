@@ -1,0 +1,118 @@
+vlan database
+vlan 1
+vlan 10
+vlan 102
+exit
+
+conf t
+ip routing
+ipv6 unicast-routing
+ipv6 router ospf 1
+router-id 2.2.2.122
+router ospf 10
+router-id 2.2.2.122
+network 192.168.0.0 0.0.3.255 area 0
+default-information originate always
+
+router ospf 1
+router-id 2.2.2.122
+network 10.0.0.0 0.255.255.255 area 0
+redistribute ospf 10
+
+int range f1/10 - 15
+switchport mode trunk
+switchport trunk allowed vlan 1,10,102,1002-1005
+
+int Vlan 1
+ip address 10.0.1.122 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 addres 2002:A:A:0:1::122/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+int Vlan 10
+ip address 10.0.10.122 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 addres 2002:A:A:0:10::122/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+int Vlan 102
+ip address 10.0.102.122 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 addres 2002:A:A:0:102::122/64
+ipv6 ospf 1 area 0
+no autostate
+no shutdown
+
+int f0/0
+ip add 10.5.0.122 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 address 2002:A:A:5::122/64
+ipv6 ospf 1 area 0
+no shut
+
+int f0/1
+ip add 10.6.0.122 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:6::122/64
+ipv6 ospf 1 area 0
+no shut
+
+int f1/0
+no switchport
+ip add 10.4.0.122 255.255.255.0
+ip ospf mtu-ignore
+ipv6 enable
+ipv6 add 2002:A:A:4::122/64
+ipv6 ospf 1 area 0
+no shut
+
+int f1/1
+no switchport
+ip add 192.168.100.122 255.255.255.0
+ip ospf 10 area 0
+ip ospf mtu-ignore
+no shut
+
+exit
+
+!QoS
+
+class-map match-all PREMIUM
+match ip dscp ef
+
+class-map match-all BEST-EFFORT
+match ip dscp default
+
+policy-map EDGE
+class PREMIUM
+priority percent 40
+class BEST-EFFORT
+police 16000 2000 2000 conform-action set-dscp-transmit 0
+
+int range f1/0 - 15
+service-policy output EDGE
+
+int range f0/0 - 1
+service-policy output EDGE
+
+exit
+
+ipv6 router ospf 1
+passive-interface vlan 1
+passive-interface vlan 10
+
+router ospf 1
+passive-interface vlan 1
+passive-interface vlan 10
+
+end
+write
